@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crash Map</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://kit.fontawesome.com/fec37a4e39.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li class="logo">Faizan Mohammad</li>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Me</a></li>
+            <li><a href="step1.html">Step 1</a></li>
+            <li><a href="crashmap.html" class="current">Crash Map</a></li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        <h1>Crash Map</h1>
+        <p style="font-weight: bold;">Finished Project</p>
+        <br>
+        <div id="map"></div>
+    
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+        <script>
+            // Check if geolocation is supported
+            if (navigator.geolocation) {
+                // Get current position
+                navigator.geolocation.getCurrentPosition(success, error);
+            } else {
+                alert("Geolocation is not supported by your browser.");
+            }
+    
+            // Success callback function
+            function success(position) {
+                var currentLatitude = position.coords.latitude;
+                var currentLongitude = position.coords.longitude;
+    
+                // Initialize map and set its view to the current location
+                var map = L.map('map').setView([currentLatitude, currentLongitude], 13);
+    
+                // Add OpenStreetMap tiles to the map
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+    
+                // Add a marker to the current location
+                var currentLocation = L.marker([currentLatitude, currentLongitude]).addTo(map)
+                    .bindPopup('You are here!')
+    
+    
+                //______________________________________________________________________________________________________//
+    
+                // crash coordinates 1
+                var crashLatitude1 = 37.54;
+                var crashLongitude1 = -77.43;
+    
+                // Add a circle zone at the crash coordinates
+                var crashZone1 = L.circle([crashLatitude1, crashLongitude1], {
+                    color: 'blue',
+                    fillColor: '#add8e6',
+                    fillOpacity: 0.5,
+                    radius: 500
+                }).addTo(map);
+                crashZone1.bindPopup("Crash Zone 1: 500m Radius")
+    
+    
+                // crash coordinates 2
+                var crashLatitude2 = 37.55;
+                var crashLongitude2 = -77.44;
+    
+                // Add a circle zone at the crash coordinates
+                var crashZone2 = L.circle([crashLatitude2, crashLongitude2], {
+                    color: 'blue',
+                    fillColor: '#add8e6',
+                    fillOpacity: 0.5,
+                    radius: 500
+                }).addTo(map);
+                crashZone2.bindPopup("Crash Zone 2: 500m Radius")
+    
+    
+                // crash coordinates 3
+                var crashLatitude3 = 36.85;
+                var crashLongitude3 = -76.20;
+    
+                // Add a circle zone at the crash coordinates
+                var crashZone3 = L.circle([crashLatitude3, crashLongitude3], {
+                    color: 'blue',
+                    fillColor: '#add8e6',
+                    fillOpacity: 0.5,
+                    radius: 1000
+                }).addTo(map);
+                crashZone3.bindPopup("Crash Zone 3: 1km Radius")
+    
+    
+                // crash coordinates 4
+                var crashLatitude4 = 37.54;
+                var crashLongitude4 = -77.44;
+    
+                // Add a circle zone at the crash coordinates
+                var crashZone4 = L.circle([crashLatitude4, crashLongitude4], {
+                    color: 'blue',
+                    fillColor: '#add8e6',
+                    fillOpacity: 0.5,
+                    radius: 500
+                }).addTo(map);
+                crashZone4.bindPopup("Crash Zone 4: 500m Radius")
+    
+    
+                // crash coordinates 5
+                var crashLatitude5 = 37.66;
+                var crashLongitude5 = -78.24;
+    
+                // Add a circle zone at the crash coordinates
+                var crashZone5 = L.circle([crashLatitude5, crashLongitude5], {
+                    color: 'blue',
+                    fillColor: '#add8e6',
+                    fillOpacity: 0.5,
+                    radius: 500
+                }).addTo(map);
+                crashZone5.bindPopup("Crash Zone 5: 500m Radius")
+    
+            }
+    
+            
+    
+            // Error callback function
+            function error() {
+                alert("Unable to retrieve your location.");
+            }
+        </script>
+    
+    </div>
+</body>
+</html>
