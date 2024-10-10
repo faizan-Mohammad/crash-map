@@ -100,10 +100,11 @@
             // Check if geolocation is supported and start continuous tracking
             if (navigator.geolocation) {
                 navigator.geolocation.watchPosition(success, error, {
-                    enableHighAccuracy: true,
-                    maximumAge: 0,
-                    timeout: 5000
-                });
+                enableHighAccuracy: true,
+                maximumAge: 10000, // Use cached position if it’s less than 10 seconds old
+                timeout: 10000     // Maximum time to wait for a position (10 seconds)
+            });
+
             } else {
                 alert("Geolocation is not supported by your browser.");
             }
