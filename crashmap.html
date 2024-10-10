@@ -49,6 +49,7 @@
             function success(position) {
                 var currentLatitude = position.coords.latitude;
                 var currentLongitude = position.coords.longitude;
+                console.log(`Updated Coordinates: Latitude: ${currentLatitude}, Longitude: ${currentLongitude}`);
 
                 // Log the current coordinates to the console
                 console.log("Current Coordinates:", currentLatitude, currentLongitude);
