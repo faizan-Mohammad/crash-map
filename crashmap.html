@@ -32,18 +32,17 @@
                 Notification.requestPermission();
             }
 
-            // Check if geolocation is supported
-            if (navigator.geolocation) {
-                // Get current position
-                navigator.geolocation.getCurrentPosition(success, error);
-            } else {
-                alert("Geolocation is not supported by your browser.");
-            }
-
             // Function to check if current location is inside a crash zone
             function isInCrashZone(currentLat, currentLng, crashLat, crashLng, radius) {
                 const distance = Math.sqrt(Math.pow(currentLat - crashLat, 2) + Math.pow(currentLng - crashLng, 2)) * 111000; // Convert degrees to meters
                 return distance <= radius;
+            }
+
+            // Function to send a notification
+            function sendNotification(message) {
+                if (Notification.permission === "granted") {
+                    new Notification(message);
+                }
             }
 
             // Success callback function
@@ -92,16 +91,20 @@
                 });
             }
 
-            // Function to send a notification
-            function sendNotification(message) {
-                if (Notification.permission === "granted") {
-                    new Notification(message);
-                }
-            }
-
             // Error callback function
             function error() {
                 alert("Unable to retrieve your location.");
+            }
+
+            // Check if geolocation is supported and start continuous tracking
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(success, error, {
+                    enableHighAccuracy: true,
+                    maximumAge: 0,
+                    timeout: 5000
+                });
+            } else {
+                alert("Geolocation is not supported by your browser.");
             }
         </script>
     
