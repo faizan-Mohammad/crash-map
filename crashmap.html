@@ -32,37 +32,24 @@
                 Notification.requestPermission();
             }
 
+            // Check if geolocation is supported
+            if (navigator.geolocation) {
+                // Get current position
+                navigator.geolocation.getCurrentPosition(success, error);
+            } else {
+                alert("Geolocation is not supported by your browser.");
+            }
+
             // Function to check if current location is inside a crash zone
             function isInCrashZone(currentLat, currentLng, crashLat, crashLng, radius) {
                 const distance = Math.sqrt(Math.pow(currentLat - crashLat, 2) + Math.pow(currentLng - crashLng, 2)) * 111000; // Convert degrees to meters
                 return distance <= radius;
             }
 
-            // Function to send a notification
-            function sendNotification(message) {
-                if (Notification.permission === "granted") {
-                    new Notification(message);
-                }
-            }
-
             // Success callback function
             function success(position) {
                 var currentLatitude = position.coords.latitude;
                 var currentLongitude = position.coords.longitude;
-                console.log(`Updated Coordinates: Latitude: ${currentLatitude}, Longitude: ${currentLongitude}`);
-                
-
-                var currentLatitude = position.coords.latitude;
-                var currentLongitude = position.coords.longitude;
-
-                if (!mapInitialized) {
-                    // Initialize the map only once
-                    initializeMap(currentLatitude, currentLongitude);
-                    mapInitialized = true;
-                } else {
-                    // Just update the marker position when returning to the tab
-                    updateMarker(currentLatitude, currentLongitude);
-                }
 
                 // Log the current coordinates to the console
                 console.log("Current Coordinates:", currentLatitude, currentLongitude);
@@ -105,21 +92,16 @@
                 });
             }
 
+            // Function to send a notification
+            function sendNotification(message) {
+                if (Notification.permission === "granted") {
+                    new Notification(message);
+                }
+            }
+
             // Error callback function
             function error() {
                 alert("Unable to retrieve your location.");
-            }
-
-            // Check if geolocation is supported and start continuous tracking
-            if (navigator.geolocation) {
-                navigator.geolocation.watchPosition(success, error, {
-                enableHighAccuracy: true,
-                maximumAge: 10000, // Use cached position if it’s less than 10 seconds old
-                timeout: 10000     // Maximum time to wait for a position (10 seconds)
-            });
-
-            } else {
-                alert("Geolocation is not supported by your browser.");
             }
         </script>
     
