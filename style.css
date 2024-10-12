@@ -98,7 +98,7 @@ h1,h2 {
     padding-top: 10px;
 }
 
-.view-project-btn {
+.btn {
     background-color: var(--orange); /* Vibrant orange background */
     border: none;
     color: var(--white);
@@ -113,13 +113,13 @@ h1,h2 {
     transition: all 0.3s ease;
 }
 
-.view-project-btn:hover {
+.btn:hover {
     background-color: var(--white); /* Slightly lighter orange on hover */
     transform: translateY(-2px); /* Lift button on hover */
     color: var(--orange);
 }
 
-.view-project-btn:active {
+.btn:active {
     background-color: var(--orange); /* Darker shade when clicked */
     transform: translateY(0); /* Return to normal position */
     color: var(--white);
