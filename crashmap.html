@@ -23,15 +23,30 @@
         <h1>Crash Map</h1>
         <p style="font-weight: bold;">Finished Project</p>
         <br>
-        <button class="btn" onclick="sendNotification('Test Notification')">Send Notification</button>
-        <br>
+
         <div id="map"></div>
+
+        <div id="notification"></div>
     
         <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
         <script>
-            // Request notification permission
-            if (Notification.permission !== "granted") {
-                Notification.requestPermission();
+            // Function to display the in-page notification
+            function showNotification(message) {
+                const notification = document.getElementById('notification');
+                notification.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> &nbsp; ${message}`; // Include the FontAwesome icon here
+                notification.classList.add('show');
+
+                // Hide the notification after 3 seconds
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+
+            // Function to repeatedly show the notification every 5 seconds
+            function startNotification(message) {
+                setInterval(() => {
+                    showNotification(message);
+                }, 5000);
             }
 
             // Check if geolocation is supported
@@ -89,16 +104,9 @@
 
                     // Check if current location is inside this crash zone
                     if (isInCrashZone(currentLatitude, currentLongitude, zone.lat, zone.lng, zone.radius)) {
-                        sendNotification(`Alert! You are inside Crash Zone ${index + 1}`);
+                        startNotification(`Alert! You are inside Crash Zone ${index + 1}`);
                     }
                 });
-            }
-
-            // Function to send a notification
-            function sendNotification(message) {
-                if (Notification.permission === "granted") {
-                    new Notification(message);
-                }
             }
 
             // Error callback function
