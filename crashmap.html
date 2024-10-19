@@ -16,6 +16,7 @@
             <li><a href="about.html">About Me</a></li>
             <li><a href="step1.html">Step 1</a></li>
             <li><a href="crashmap.html" class="current">Crash Map</a></li>
+            <li><a href="testcrashmap.html">Test Crash Map</a></li>
         </ul>
     </nav>
 
@@ -24,12 +25,21 @@
         <p style="font-weight: bold;">Finished Project</p>
         <br>
 
-        <div id="map"></div>
-
+        <div id="map" style="height: 500px;"></div> <!-- Set a height for the map -->
         <div id="notification"></div>
     
         <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
         <script>
+            let map;
+            let currentLocationMarker;
+            const crashZones = [
+                { lat: 37.54, lng: -77.43, radius: 500 },
+                { lat: 37.55, lng: -77.44, radius: 500 },
+                { lat: 36.85, lng: -76.20, radius: 1000 },
+                { lat: 37.54, lng: -77.44, radius: 500 },
+                { lat: 37.66, lng: -78.24, radius: 500 }
+            ];
+
             // Function to display the in-page notification
             function showNotification(message) {
                 const notification = document.getElementById('notification');
@@ -42,37 +52,15 @@
                 }, 3000);
             }
 
-            // Function to repeatedly show the notification every 5 seconds
-            function startNotification(message) {
-                setInterval(() => {
-                    showNotification(message);
-                }, 5000);
-            }
-
-            // Check if geolocation is supported
-            if (navigator.geolocation) {
-                // Get current position
-                navigator.geolocation.getCurrentPosition(success, error);
-            } else {
-                alert("Geolocation is not supported by your browser.");
-            }
-
             // Function to check if current location is inside a crash zone
             function isInCrashZone(currentLat, currentLng, crashLat, crashLng, radius) {
                 const distance = Math.sqrt(Math.pow(currentLat - crashLat, 2) + Math.pow(currentLng - crashLng, 2)) * 111000; // Convert degrees to meters
                 return distance <= radius;
             }
 
-            // Success callback function
-            function success(position) {
-                var currentLatitude = position.coords.latitude;
-                var currentLongitude = position.coords.longitude;
-
-                // Log the current coordinates to the console
-                console.log("Current Coordinates:", currentLatitude, currentLongitude);
-
-                // Initialize map and set its view to the current location
-                var map = L.map('map').setView([currentLatitude, currentLongitude], 13);
+            // Initialize the map and set its view to the current location
+            function initMap(lat, lng) {
+                map = L.map('map').setView([lat, lng], 13);
 
                 // Add OpenStreetMap tiles to the map
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -80,39 +68,60 @@
                 }).addTo(map);
 
                 // Add a marker to the current location
-                var currentLocation = L.marker([currentLatitude, currentLongitude]).addTo(map)
-                    .bindPopup('You are here!');
-
-                // Crash zones coordinates and radii
-                var crashZones = [
-                    { lat: currentLatitude, lng: currentLongitude, radius: 50},
-                    { lat: 37.54, lng: -77.43, radius: 500 },
-                    { lat: 37.55, lng: -77.44, radius: 500 },
-                    { lat: 36.85, lng: -76.20, radius: 1000 },
-                    { lat: 37.54, lng: -77.44, radius: 500 },
-                    { lat: 37.66, lng: -78.24, radius: 500 }
-                ];
+                currentLocationMarker = L.marker([lat, lng]).addTo(map)
+                    .bindPopup('You are here!').openPopup();
 
                 // Add crash zones to the map
-                crashZones.forEach(function (zone, index) {
+                crashZones.forEach((zone, index) => {
                     L.circle([zone.lat, zone.lng], {
                         color: 'blue',
                         fillColor: '#add8e6',
                         fillOpacity: 0.5,
                         radius: zone.radius
                     }).addTo(map).bindPopup(`Crash Zone ${index + 1}: ${zone.radius}m Radius`);
-
-                    // Check if current location is inside this crash zone
-                    if (isInCrashZone(currentLatitude, currentLongitude, zone.lat, zone.lng, zone.radius)) {
-                        startNotification(`Alert! You are inside Crash Zone ${index + 1}`);
-                    }
                 });
+            }
+
+            // Function to update location
+            function updateLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(success, error);
+                } else {
+                    alert("Geolocation is not supported by your browser.");
+                }
+            }
+
+            // Success callback function
+            function success(position) {
+                const currentLatitude = position.coords.latitude;
+                const currentLongitude = position.coords.longitude;
+
+                // Log the current coordinates to the console
+                console.log("Current Coordinates:", currentLatitude, currentLongitude);
+
+                // Update the current location marker
+                if (currentLocationMarker) {
+                    currentLocationMarker.setLatLng([currentLatitude, currentLongitude]);
+                    map.setView([currentLatitude, currentLongitude]);
+
+                    // Check if current location is inside any crash zone
+                    crashZones.forEach((zone, index) => {
+                        if (isInCrashZone(currentLatitude, currentLongitude, zone.lat, zone.lng, zone.radius)) {
+                            showNotification(`Alert! You are inside Crash Zone ${index + 1}`);
+                        }
+                    });
+                } else {
+                    initMap(currentLatitude, currentLongitude); // Initialize map on the first location fetch
+                }
             }
 
             // Error callback function
             function error() {
                 alert("Unable to retrieve your location.");
             }
+
+            // Start updating location every 0.5 seconds
+            setInterval(updateLocation, 1000);
         </script>
     
     </div>
