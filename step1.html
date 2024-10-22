@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step 1</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li class="logo">Faizan Mohammad</li>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html" >About Me</a></li>
+            <li><a href="step1.html" class="current">Step 1</a></li>
+            <li><a href="crashmap.html">Crash Map</a></li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        <h1>Step 1</h1>
+        <p style="font-weight: bold;">Download and setup the data</p>
+        
+        <div class="main-content">
+            <p>The first step for my project was to download and set up the data. The data I got was from the VDOT website, and it was in a .csv file format. The data had different variables such as, what location the crash happened (the latitude and longitude coordinates), the crash date (When the crash happened including the time), what part of the vehicle was damaged, the weather, etc.</p>
+            <p>&nbsp;</p>
+            <p>I then set up the data by writing some code that would filter out the data. So it only chose the important variables like: "CRASH_SEVERITY", "COLLISION_TYPE", WEATHER_CONDITION", "ROADWAY_DESCRIPTION", "INTERSECTION_TYPE", "WORK_ZONE_LOCATION", "WORK_ZONE_TYPE", "SCHOOL_ZONE". There were a lot of other variables but these are just a few of them.</p>
+            
+            <details>
+                <summary>All the selected variables</summary>
+                <p>sel_colms = ["CRASH_SEVERITY", "COLLISION_TYPE", "WEATHER_CONDITION", "LIGHT_CONDITION", "ROADWAY_SURFACE_COND", "RELATION_TO_ROADWAY", "ROADWAY_ALIGNMENT", "ROADWAY_SURFACE_TYPE", "ROADWAY_DEFECT", "ROADWAY_DESCRIPTION", "INTERSECTION_TYPE", "TRAFFIC_CONTROL_TYPE", "TRFC_CTRL_STATUS_TYPE", "WORK_ZONE_RELATED", "WORK_ZONE_LOCATION", "WORK_ZONE_TYPE", "SCHOOL_ZONE", "FIRST_HARMFUL_EVENT", "FIRST_HARMFUL_EVENT_LOC", "ALCOHOL_NOTALCOHOL", "ANIMAL", "BELTED_UNBELTED", "BIKE_NONBIKE", "DISTRACTED_NOTDISTRACTED", "DROWSY_NOTDROWSY", "DRUG_NODRUG", "GR_NOGR", "HITRUN_NOT_HITRUN", "LGTRUCK_NONLGTRUCK", "MOTOR_NONMOTOR", "PED_NONPED", "SPEED_NOTSPEED", "SPEED_DIFF_MAX", "RD_TYPE", "INTERSECTION_ANALYSIS", "SENIOR_NOTSENIOR", "YOUNG_NOTYOUNG", "AREA_TYPE", "FAC"]</p>
+            </details>
+        </div>
+    </div>
+</body>
+</html>
