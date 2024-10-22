@@ -140,3 +140,14 @@ h1,h2 {
 #notification.show {
     display: block;
 }
+
+.custom-marker {
+    width: 10px;
+    height: 10px;
+    background-color: rgb(0, 115, 255); /* Customize the color */
+    transform: rotate(45deg); /* Rotate the square to create a diamond shape */
+    position: relative;
+    border: 2px solid white; /* Optional: add a border */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Optional: add shadow */
+}
+
