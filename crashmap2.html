@@ -23,7 +23,7 @@
         <h1>Crash Map</h1>
         <p style="font-weight: bold;">Finished Project</p>
         <br>
- 
+
         <div id="map"></div>
 
         <div id="notification"></div>
@@ -57,29 +57,11 @@
                 alert("Geolocation is not supported by your browser.");
             }
 
-            // Function to update location
-            function updateLocation() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(success, error);
-                } else {
-                    alert("Geolocation is not supported by your browser.");
-                }
-            }
-
             // Function to check if current location is inside a crash zone
             function isInCrashZone(currentLat, currentLng, crashLat, crashLng, radius) {
                 const distance = Math.sqrt(Math.pow(currentLat - crashLat, 2) + Math.pow(currentLng - crashLng, 2)) * 111000; // Convert degrees to meters
                 return distance <= radius;
             }
-
-            // Define a custom DivIcon for the current location marker
-            var customDivIcon = L.divIcon({
-                className: 'custom-div-icon', // You can style this class in your CSS
-                html: "<div class='custom-marker'></div>", // Custom HTML for the marker
-                iconSize: [10, 10], // Size of the icon (width, height)
-                iconAnchor: [5, 5] // Anchor the icon to its center (half of iconSize)
-            });
-
 
             // Success callback function
             function success(position) {
@@ -98,20 +80,17 @@
                 }).addTo(map);
 
                 // Add a marker to the current location
-                var currentLocation = L.marker([currentLatitude, currentLongitude], { icon: customDivIcon }).addTo(map)
+                var currentLocation = L.marker([currentLatitude, currentLongitude]).addTo(map)
                     .bindPopup('You are here!');
-                //var currentLocation = L.marker([currentLatitude, currentLongitude]).addTo(map)
-
 
                 // Crash zones coordinates and radii
                 var crashZones = [
-                    // { lat: currentLatitude, lng: currentLongitude, radius: 50},
+                    { lat: currentLatitude, lng: currentLongitude, radius: 50},
                     { lat: 37.54, lng: -77.43, radius: 500 },
                     { lat: 37.55, lng: -77.44, radius: 500 },
                     { lat: 36.85, lng: -76.20, radius: 1000 },
                     { lat: 37.54, lng: -77.44, radius: 500 },
-                    { lat: 37.66, lng: -78.24, radius: 500 },
-                    { lat: 38.061164, lng: -78.712568, radius: 100}
+                    { lat: 37.66, lng: -78.24, radius: 500 }
                 ];
 
                 // Add crash zones to the map
@@ -134,8 +113,6 @@
             function error() {
                 alert("Unable to retrieve your location.");
             }
-
-            setInterval(updateLocation, 1000);
         </script>
     
     </div>
