@@ -95,7 +95,7 @@
                 }).addTo(map).bindPopup(`Your Location Crash Zone: 100m Radius`);
 
                 // Load crash zones from CSV file
-                loadCrashZonesFromCSV('crash_zones.csv', function(crashZones) {
+                loadCrashZonesFromCSV('test_df.csv', function(crashZones) {
                     crashZones.forEach((zone, index) => {
                         console.log('Adding Crash Zone:', zone); // Debugging: Log each zone being added
 
