@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://kit.fontawesome.com/fec37a4e39.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script> <!-- PapaParse for CSV parsing -->
 </head>
 <body>
     <nav class="navbar">
@@ -23,38 +25,20 @@
         <h1>Crash Map</h1>
         <p style="font-weight: bold;">Finished Project</p>
         <br>
-
+ 
         <div id="map"></div>
 
         <div id="notification"></div>
-    
-        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
         <script>
             // Function to display the in-page notification
             function showNotification(message) {
                 const notification = document.getElementById('notification');
-                notification.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> &nbsp; ${message}`; // Include the FontAwesome icon here
+                notification.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> &nbsp; ${message}`;
                 notification.classList.add('show');
-
-                // Hide the notification after 3 seconds
                 setTimeout(() => {
                     notification.classList.remove('show');
                 }, 3000);
-            }
-
-            // Function to repeatedly show the notification every 5 seconds
-            function startNotification(message) {
-                setInterval(() => {
-                    showNotification(message);
-                }, 5000);
-            }
-
-            // Check if geolocation is supported
-            if (navigator.geolocation) {
-                // Get current position
-                navigator.geolocation.getCurrentPosition(success, error);
-            } else {
-                alert("Geolocation is not supported by your browser.");
             }
 
             // Function to check if current location is inside a crash zone
@@ -63,58 +47,85 @@
                 return distance <= radius;
             }
 
-            // Success callback function
-            function success(position) {
-                var currentLatitude = position.coords.latitude;
-                var currentLongitude = position.coords.longitude;
+            // Function to load and parse CSV data
+            function loadCrashZonesFromCSV(csvFileUrl, callback) {
+                Papa.parse(csvFileUrl, {
+                    download: true,
+                    header: true,
+                    dynamicTyping: true,
+                    complete: function(results) {
+                        console.log('Parsed CSV Data:', results.data); // Debugging: Log parsed data
+                        callback(results.data); // Pass the parsed data to a callback
+                    }
+                });
+            }
 
-                // Log the current coordinates to the console
+            // Success callback function for geolocation
+            function success(position) {
+                const currentLatitude = position.coords.latitude;
+                const currentLongitude = position.coords.longitude;
+
                 console.log("Current Coordinates:", currentLatitude, currentLongitude);
 
                 // Initialize map and set its view to the current location
-                var map = L.map('map').setView([currentLatitude, currentLongitude], 13);
+                const map = L.map('map').setView([currentLatitude, currentLongitude], 13);
 
                 // Add OpenStreetMap tiles to the map
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(map);
 
-                // Add a marker to the current location
-                var currentLocation = L.marker([currentLatitude, currentLongitude]).addTo(map)
+                // Add a marker for the current location
+                const customDivIcon = L.divIcon({
+                    className: 'custom-div-icon',
+                    html: "<div class='custom-marker'></div>",
+                    iconSize: [10, 10],
+                    iconAnchor: [5, 5]
+                });
+
+                const currentLocation = L.marker([currentLatitude, currentLongitude], { icon: customDivIcon }).addTo(map)
                     .bindPopup('You are here!');
 
-                // Crash zones coordinates and radii
-                var crashZones = [
-                    { lat: currentLatitude, lng: currentLongitude, radius: 50},
-                    { lat: 37.54, lng: -77.43, radius: 500 },
-                    { lat: 37.55, lng: -77.44, radius: 500 },
-                    { lat: 36.85, lng: -76.20, radius: 1000 },
-                    { lat: 37.54, lng: -77.44, radius: 500 },
-                    { lat: 37.66, lng: -78.24, radius: 500 }
-                ];
+                // Add a crash zone circle at the current location with a 100m radius
+                const currentLocationCrashZone = L.circle([currentLatitude, currentLongitude], {
+                    color: 'red',
+                    fillColor: '#f03',
+                    fillOpacity: 0.5,
+                    radius: 100 // Radius in meters
+                }).addTo(map).bindPopup(`Your Location Crash Zone: 100m Radius`);
 
-                // Add crash zones to the map
-                crashZones.forEach(function (zone, index) {
-                    L.circle([zone.lat, zone.lng], {
-                        color: 'blue',
-                        fillColor: '#add8e6',
-                        fillOpacity: 0.5,
-                        radius: zone.radius
-                    }).addTo(map).bindPopup(`Crash Zone ${index + 1}: ${zone.radius}m Radius`);
+                // Load crash zones from CSV file
+                loadCrashZonesFromCSV('crash_zones.csv', function(crashZones) {
+                    crashZones.forEach((zone, index) => {
+                        console.log('Adding Crash Zone:', zone); // Debugging: Log each zone being added
 
-                    // Check if current location is inside this crash zone
-                    if (isInCrashZone(currentLatitude, currentLongitude, zone.lat, zone.lng, zone.radius)) {
-                        startNotification(`Alert! You are inside Crash Zone ${index + 1}`);
-                    }
+                        L.circle([zone.lat, zone.lng], {
+                            color: 'blue',
+                            fillColor: '#add8e6',
+                            fillOpacity: 0.5,
+                            radius: zone.radius
+                        }).addTo(map).bindPopup(`Crash Zone ${index + 1}: ${zone.radius}m Radius`);
+
+                        // Check if current location is inside this crash zone
+                        if (isInCrashZone(currentLatitude, currentLongitude, zone.lat, zone.lng, zone.radius)) {
+                            showNotification(`Alert! You are inside Crash Zone ${index + 1}`);
+                        }
+                    });
                 });
             }
 
-            // Error callback function
+            // Error callback function for geolocation
             function error() {
                 alert("Unable to retrieve your location.");
             }
+
+            // Check if geolocation is supported
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(success, error);
+            } else {
+                alert("Geolocation is not supported by your browser.");
+            }
         </script>
-    
     </div>
 </body>
 </html>
